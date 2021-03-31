@@ -103,7 +103,6 @@ def getallcode(parselist, fileendingsexclude = fileendingsexclude, foldernamesex
     return(files)
 
 
-
 def getallcode_test():
     files = getallcode([__projectdir__ / Path('testdir/okdir1/'), __projectdir__ / Path('testdir/okdir3/')])
 
@@ -123,8 +122,16 @@ def getallcode_ap():
 
     filelist = process_fileinputs(args.filename, args.files_asstring, args.files_aslines, args.files_infile, args.files_indir, args.files_inpwd)
 
-    getallcode(filelist)
-    
+    # remove comments and blank lines in parselist
+    filelist = [filename for filename in filelist if not filename.startswith('#') and not filename == '']
+
+    # replace ~ in parselist
+    filelist = [filename.replace('~', os.path.expanduser('~')) for filename in filelist]
+
+    files = getallcode(filelist)
+
+    print('\n'.join(files))
+
 
 # Run:{{{1
 if __name__ == '__main__':
