@@ -2,8 +2,14 @@
 
 import os
 from pathlib import Path
+import sys
 
 __projectdir__ = Path(os.path.dirname(os.path.realpath(__file__)) + '')
+
+# argparse fileinputs
+sys.path.append(str(__projectdir__ / Path('submodules/argparse-fileinputs/')))
+from argparse_fileinputs import add_fileinputs
+from argparse_fileinputs import process_fileinputs
 
 # Excluded Variables:{{{1
 fileendingsexclude = []
@@ -104,7 +110,23 @@ def getallcode_test():
     print(files)
 
 
+def getallcode_ap():
+    #Argparse:{{{
+    import argparse
+    
+    parser=argparse.ArgumentParser()
+
+    parser = add_fileinputs(parser)
+    
+    args=parser.parse_args()
+    #End argparse:}}}
+
+    filelist = process_fileinputs(args.filename, args.files_asstring, args.files_aslines, args.files_infile, args.files_indir, args.files_inpwd)
+
+    getallcode(filelist)
+    
+
 # Run:{{{1
 if __name__ == '__main__':
-    getallcode_test()
+    getallcode_ap()
 
