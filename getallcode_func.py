@@ -16,16 +16,16 @@ fileendingsexclude = []
 # general exclude
 fileendingsexclude = fileendingsexclude + ['.jpg', '.mat', '.out', '.pdf', '.png', '.pptx', '.pyc', '.tar', '.xls', '.zip']
 # latex fileendings exclude
-fileendingsexclude = fileendingsexclude + ['.aux', '.bbl', '.blg', '.dvi', 'fdb_latexmk', 'fls', '.log', '.synctex.gz']
+fileendingsexclude = fileendingsexclude + ['.aux', '.bbl', '.blg', '.dvi', 'fdb_latexmk', 'fls', '.ipynb', '.log', '.snm', '.synctex.gz', '.toc']
 # want to avoid calling _escaped.snippets in my commonsectionupdate function
 fileendingsexclude = fileendingsexclude + ['_escaped.snippets']
 
-foldernamesexclude = ['.git', 'data', 'graphs', 'old', 'submodules', 'submodules2', 'temp', 'git', 'output']
+foldernamesexclude = ['__pycache__', '.git', '.ipynb_checkpoints', 'old', 'submodules', 'submodules2', 'temp', 'git', 'output']
 folderendingsexclude = ['-external',]
 
 
 
-def getallcode(parselist, fileendingsexclude = fileendingsexclude, foldernamesexclude = foldernamesexclude):
+def getallcode(parselist, fileendingsexclude = fileendingsexclude, foldernamesexclude = foldernamesexclude, docheck = False):
     if fileendingsexclude is None:
         fileendingsexclude = []
     if foldernamesexclude is None:
@@ -100,6 +100,25 @@ def getallcode(parselist, fileendingsexclude = fileendingsexclude, foldernamesex
     # sort files
     files = sorted(files)
 
+    # do check:{{{
+    # this check orders files from smallest to largest size
+    # so I can remove any files that are making grepcode/infrep run slow
+    if docheck is True:
+        filenames2 = []
+        sizes = []
+        for filename in files:
+            size = os.path.getsize(filename)
+            filenames2.append(filename + ',' + str(size))
+            sizes.append( size )
+
+        # sort filenames2 by sizes
+        filenames2 = [filename2 for _, filename2 in sorted(zip(sizes, filenames2))]
+
+        # set files I return to be filenames2
+        files = filenames2
+        
+    # do check:}}}
+
     return(files)
 
 
@@ -116,6 +135,7 @@ def getallcode_ap():
     parser=argparse.ArgumentParser()
 
     parser = add_fileinputs(parser)
+    parser.add_argument("--docheck", action = 'store_true')
     
     args=parser.parse_args()
     #End argparse:}}}
@@ -128,7 +148,7 @@ def getallcode_ap():
     # replace ~ in parselist
     filelist = [filename.replace('~', os.path.expanduser('~')) for filename in filelist]
 
-    files = getallcode(filelist)
+    files = getallcode(filelist, docheck = args.docheck)
 
     print('\n'.join(files))
 
