@@ -21,7 +21,7 @@ fileendingsexclude = fileendingsexclude + ['.aux', '.bbl', '.blg', '.dvi', 'fdb_
 fileendingsexclude = fileendingsexclude + ['_escaped.snippets']
 
 foldernamesexclude = ['__pycache__', '.git', '.ipynb_checkpoints', 'old', 'submodules', 'submodules2', 'temp', 'git', 'output']
-folderendingsexclude = ['-external',]
+folderendingsexclude = ['-copy', '-external',]
 
 
 
